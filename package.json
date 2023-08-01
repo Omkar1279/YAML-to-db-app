@@ -1,0 +1,22 @@
+{
+  "name": "yaml-to-db-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-express": "^3.12.0",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "graphql": "^16.7.1",
+    "js-yaml": "^4.1.0",
+    "mongodb": "^5.7.0",
+    "mongoose": "^7.4.1"
+  }
+}

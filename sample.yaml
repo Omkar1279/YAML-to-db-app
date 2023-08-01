@@ -1,0 +1,7 @@
+- name: Node 1
+  type: Type A
+  description: This is Node 1
+
+- name: Node 2
+  type: Type A
+  description: This is Node 2
