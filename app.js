@@ -4,13 +4,15 @@ const mongoose = require('mongoose');
 const { typeDefs, resolvers } = require('./schema/schema');
 const { parseYAML } = require('./utils/yamlParser');
 const Node = require('./models/nodeModels');
+require('dotenv').config(); // Load environment variables from .env file
 // const fs = require('fs');
 // const queries = fs.readFileSync('./queries.graphql', 'utf-8');
 
 const app = express();
 
+const mongodbUri = process.env.MONGODB_URI;
 // Connect to MongoDB (Change the connection string accordingly, i connected it to mongodb cloud)
-mongoose.connect('mongodb+srv://omkatta:36tjKBAVyiguV8am@cluster0.wbnwzl3.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect(mongodbUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
