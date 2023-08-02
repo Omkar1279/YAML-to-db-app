@@ -1,0 +1,117 @@
+# Fetch nodes by their name
+query GetNodesByName($name: String!) {
+  getNodesByName(name: $name) {
+    _id
+    name
+    type
+    description
+    children {
+      _id
+      name
+      type
+      description
+    }
+  }
+}
+
+# Fetch nodes by their type
+query GetNodesByType($type: String!) {
+  getNodesByType(type: $type) {
+    _id
+    name
+    type
+    description
+    children {
+      _id
+      name
+      type
+      description
+    }
+  }
+}
+
+mutation AddNewNode($input: NodeInput!) {
+  addNode(input: $input) {
+    _id
+    name
+    type
+    description
+    children {
+      _id
+      name
+      type
+      description
+    }
+  }
+}
+
+mutation AddChildrenToNode($input: AddChildrenInput!) {
+  addChildrenToNode(input: $input) {
+    _id
+    name
+    type
+    description
+    children {
+      _id
+      name
+      type
+      description
+    }
+  }
+}
+
+
+mutation AddChildrenToNode($input: AddChildrenInput!) {
+  addChildrenToNode(input: $input) {
+    _id
+    name
+    type
+    description
+    children {
+      _id
+      name
+      type
+      description
+    }
+  }
+}
+
+
+# Variables
+
+  # for search by name
+  {
+    "input": {
+      "name": "Node 1",
+    }
+  }
+
+  # for search by name
+  {
+    "input": {
+      "type": "Type A",
+    }
+  }
+
+  # add new node
+  {
+    "input": {
+      "name": "New Node",
+      "type": "Type A",
+      "description": "This is a new node"
+    }
+  }
+
+{
+  "input": {
+    "nodeId": "parent_node_id",
+    "childrenIds": ["child_node_id_1", "child_node_id_2"]
+  }
+}
+
+{
+  "input": {
+    "nodeId": "your_node_id",
+    "childrenIds": ["child_node_id_1", "child_node_id_2"]
+  }
+}

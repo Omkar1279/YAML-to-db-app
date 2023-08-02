@@ -1,18 +1,23 @@
+// In your ./utils/yamlParser.js file, update the parseYAML function
 const fs = require('fs');
 const yaml = require('js-yaml');
 
-// Function to parse YAML data from the input file
-const parseYAML = (filePath) => {
+function parseYAML(yamlFilePath) {
   try {
-    // Read the content of the YAML file
-    const yamlContent = fs.readFileSync(filePath, 'utf8');
+    const fileContents = fs.readFileSync(yamlFilePath, 'utf8');
+    const data = yaml.load(fileContents);
 
-    // Parse the YAML data and return the JavaScript object
-    return yaml.load(yamlContent);
+    // Ensure that the data is an array
+    if (!Array.isArray(data)) {
+      throw new Error('YAML data should be an array of objects.');
+    }
+
+    // Return the parsed data
+    return data;
   } catch (error) {
-    console.error('Error while parsing YAML file:', error.message);
-    throw error;
+    console.error('Error while parsing YAML data:', error.message);
+    return [];
   }
-};
+}
 
 module.exports = { parseYAML };

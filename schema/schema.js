@@ -20,6 +20,12 @@ const typeDefs = gql`
     children: [ID] # List of IDs of child nodes (if any)
   }
 
+  # Input type for adding children to a node.
+  input AddChildrenInput {
+    nodeId: ID! # ID of the node to which children will be added
+    childrenIds: [ID]! # List of IDs of child nodes to be added
+  }
+
   type Query {
     # Retrieve a node by its unique ID.
     getNodeById(id: ID!): Node
@@ -30,7 +36,7 @@ const typeDefs = gql`
     # Retrieve nodes by their name.
     getNodesByName(name: String!): [Node]
 
-    # Define other query types in future
+    getNodes: [Node]
   }
 
   type Mutation {
@@ -40,7 +46,8 @@ const typeDefs = gql`
     # Update an existing node in the database.
     updateNode(id: ID!, input: NodeInput!): Node
 
-    # Define other mutation types in future
+    # Add children to an existing node in the database.
+    addChildrenToNode(input: AddChildrenInput!): Node
   }
 `;
 
@@ -79,7 +86,16 @@ const resolvers = {
         throw error;
       }
     },
-    // Implement other query resolvers based on your requirements
+
+    getNodes: async () => {
+      try {
+        const nodes = await Node.find().populate('children');
+        return nodes;
+      } catch (error) {
+        console.error('Error while fetching nodes:', error.message);
+        throw error;
+      }
+    },
   },
   Mutation: {
     // Resolver to add a new node to the database.
@@ -121,7 +137,35 @@ const resolvers = {
         throw error;
       }
     },
-    // Implement other mutation resolvers based on your requirements
+
+    addChildrenToNode: async (_, { input }) => {
+      try {
+        const { nodeId, childrenIds } = input;
+
+        // Find the node by ID
+        const node = await Node.findById(nodeId).populate('children');
+        if (!node) {
+          throw new Error('Node not found');
+        }
+
+        // Find the children nodes by their IDs
+        const childrenNodes = await Node.find({ _id: { $in: childrenIds } });
+        if (childrenNodes.length !== childrenIds.length) {
+          throw new Error('One or more child nodes not found');
+        }
+
+        // Add the children nodes to the parent node
+        node.children.push(...childrenNodes);
+
+        // Save the updated node to the database
+        await node.save();
+
+        return node;
+      } catch (error) {
+        console.error('Error while adding children to node:', error.message);
+        throw error;
+      }
+    },
   },
 };
 

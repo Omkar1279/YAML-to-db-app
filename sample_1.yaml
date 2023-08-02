@@ -1,7 +1,0 @@
-  children:
-    - name: Child 1
-      type: Type B
-      description: This is Child 1
-    - name: Child 2
-      type: Type B
-      description: This is Child 2

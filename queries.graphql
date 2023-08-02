@@ -1,6 +1,6 @@
-# Fetch nodes by their type
-query GetNodesByType($type: String!) {
-  getNodesByType(type: $type) {
+# Directly input is given
+query GetNodesByType {
+  getNodesByType(type: "Type A") {
     _id
     name
     type
@@ -14,9 +14,68 @@ query GetNodesByType($type: String!) {
   }
 }
 
-# Fetch nodes by their name
-query GetNodesByName($name: String!) {
-  getNodesByName(name: $name) {
+# Directly input is given
+query GetNodesByName {
+  getNodesByName(name: "Node 1") {
+    _id
+    name
+    type
+    description
+    children {
+      _id
+      name
+      type
+      description
+    }
+  }
+}
+
+# Directly give it name
+mutation {
+  addNode(input: {
+    name: "New Node",
+    type: "Type A",
+    description: "This is a new node"
+  }) {
+    _id
+    name
+    type
+    description
+    children {
+      _id
+      name
+      type
+      description
+    }
+  }
+}
+
+mutation {
+  addNode(input: {
+    name: "New Node",
+    type: "Type A",
+    description: "This is a new node"
+  }) {
+    _id
+    name
+    type
+    description
+    children {
+      _id
+      name
+      type
+      description
+    }
+  }
+}
+
+mutation {
+  updateNode(id: "64c8b28ff0ed488abcf7ce76", input: {
+    name: "Updated Node Name",
+    type: "Updated Type",
+    description: "Updated description of the node",
+    children: ["childNodeId1", "childNodeId2"]
+  }) {
     _id
     name
     type

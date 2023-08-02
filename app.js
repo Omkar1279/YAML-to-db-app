@@ -44,37 +44,55 @@ async function startServer() {
     await Node.deleteMany({}); // Clear the existing data in the database (optional)
     const yamlFilePath = './sample.yaml'; // Change this to the actual file path
     const yamlData = parseYAML(yamlFilePath);
-    await Node.create(yamlData);
+    // Validate the YAML data before saving it to the database
+    if (!Array.isArray(yamlData)) {
+      throw new Error('YAML data should be an array of objects.');
+    }
+
+    // Validate each object in the array
+    for (const node of yamlData) {
+      if (
+        typeof node.name !== 'string' ||
+        typeof node.type !== 'string' ||
+        typeof node.description !== 'string'
+      ) {
+        throw new Error('Each node object in the YAML data should have "name", "type", and "description" properties of type string.');
+      }
+
+      // You can add further validation if needed based on your data requirements
+    }
+
+    // Create parent nodes with children
+    for (const nodeData of yamlData) {
+      // Create the parent node
+      const parentNode = await Node.create({
+        name: nodeData.name,
+        type: nodeData.type,
+        description: nodeData.description,
+      });
+
+      // Check if the current node has children
+      if (nodeData.children && Array.isArray(nodeData.children)) {
+        // Create the child nodes and associate them with the parent node
+        for (const childData of nodeData.children) {
+          const childNode = await Node.create({
+            name: childData.name,
+            type: childData.type,
+            description: childData.description,
+          });
+          parentNode.children.push(childNode._id);
+        }
+
+        // Save the updated parent node with the child references
+        await parentNode.save();
+      }
+    }
+
     console.log('YAML data saved to the database successfully');
   } catch (error) {
     console.error('Error while saving YAML data to the database:', error.message);
   }
 }
-
-// async function executeQueries() {
-//   try {
-//     // Log the contents of queries.graphql (optional)
-//     console.log('Queries from queries.graphql:');
-//     console.log(queries);
-  
-//     // Execute the queries using the Apollo Server's execute function
-//     const { data, errors } = await server.executeOperation({ query: queries });
-  
-//     // Handle errors, if any
-//     if (errors) {
-//       console.error('GraphQL errors:', errors);
-//       throw new Error('Error while executing queries');
-//     }
-  
-//     // Log the data (optional)
-//     console.log('Result of queries:', data);
-//   } catch (error) {
-//     console.error('Error while executing queries:', error);
-//   }
-// }
-
-// // Call the executeQueries function
-// executeQueries();
 
 
 // Call the startServer function to initiate the server and database operations
