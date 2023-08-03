@@ -5,13 +5,13 @@ const { typeDefs, resolvers } = require('./schema/schema');
 const { parseYAML } = require('./utils/yamlParser');
 const Node = require('./models/nodeModels');
 require('dotenv').config(); // Load environment variables from .env file
-// const fs = require('fs');
-// const queries = fs.readFileSync('./queries.graphql', 'utf-8');
 
 const app = express();
 
+// Load MongoDB URI from environment variables
 const mongodbUri = process.env.MONGODB_URI;
-// Connect to MongoDB (Change the connection string accordingly, i connected it to mongodb cloud)
+
+// Connect to MongoDB
 mongoose.connect(mongodbUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -19,10 +19,11 @@ mongoose.connect(mongodbUri, {
 
 // Event listeners for MongoDB connection
 mongoose.connection.once('open', () => {
-  console.log('Connected to database');
+  console.log('Connected to the database');
 });
 mongoose.connection.on('error', (error) => {
   console.error('MongoDB connection error:', error);
+  process.exit(1); // Exit the app in case of MongoDB connection error
 });
 
 // Set up Apollo Server
@@ -43,9 +44,13 @@ async function startServer() {
 
   // Save the YAML data into the database
   try {
+    console.log('Passing YAML data...');
     await Node.deleteMany({}); // Clear the existing data in the database (optional)
     const yamlFilePath = './sample.yaml'; // Change this to the actual file path
     const yamlData = parseYAML(yamlFilePath);
+
+    console.log('Parsing YAML data completed.');
+
     // Validate the YAML data before saving it to the database
     if (!Array.isArray(yamlData)) {
       throw new Error('YAML data should be an array of objects.');
@@ -64,6 +69,7 @@ async function startServer() {
       // You can add further validation if needed based on your data requirements
     }
 
+    console.log('Saving YAML data to the database...');
     // Create parent nodes with children
     for (const nodeData of yamlData) {
       // Create the parent node
@@ -93,9 +99,9 @@ async function startServer() {
     console.log('YAML data saved to the database successfully');
   } catch (error) {
     console.error('Error while saving YAML data to the database:', error.message);
+    process.exit(1); // Exit the app in case of an error
   }
 }
-
 
 // Call the startServer function to initiate the server and database operations
 startServer().then(() => {
