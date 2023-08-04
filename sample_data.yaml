@@ -1,0 +1,43 @@
+- name: Parent Node 1
+  type: Parent Type 1
+  description: Parent Description 1
+  children:
+    - name: Child Node 1
+      type: Child Type 1
+      description: Child Description 1
+      children:
+        - name: Grandchild Node 1
+          type: Grandchild Type 1
+          description: Grandchild Description 1
+          children:
+            - name: Great-Grandchild Node 1
+              type: Great-Grandchild Type 1
+              description: Great-Grandchild Description 1
+            - name: Great-Grandchild Node 2
+              type: Great-Grandchild Type 2
+              description: Great-Grandchild Description 2
+        - name: Grandchild Node 2
+          type: Grandchild Type 2
+          description: Grandchild Description 2
+
+- name: Parent Node 2
+  type: Parent Type 2
+  description: Parent Description 2
+  children:
+    - name: Child Node 3
+      type: Child Type 3
+      description: Child Description 3
+      children:
+        - name: Grandchild Node 3
+          type: Grandchild Type 3
+          description: Grandchild Description 3
+          children:
+            - name: Great-Grandchild Node 3
+              type: Great-Grandchild Type 3
+              description: Great-Grandchild Description 3
+            - name: Great-Grandchild Node 4
+              type: Great-Grandchild Type 4
+              description: Great-Grandchild Description 4
+        - name: Grandchild Node 4
+          type: Grandchild Type 4
+          description: Grandchild Description 4
