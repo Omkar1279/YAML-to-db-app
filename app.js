@@ -8,6 +8,54 @@ require('dotenv').config(); // Load environment variables from .env file
 
 const app = express();
 
+async function handleExistingNode(existingNode, newNodeData, parent = null) {
+  console.log(`Node with same data already exists: ${newNodeData.name}`);
+
+  // Delete the existing node
+  await Node.findByIdAndDelete(existingNode._id);
+  console.log(`Deleted existing node: ${newNodeData.name}`);
+
+  // Create the new node and its descendants
+  await createNode(newNodeData, parent);
+
+  console.log(`Updated existing node: ${newNodeData.name}`);
+}
+
+
+async function createNode(nodeData, parent = null) {
+  try {
+    const existingNode = await Node.findOne({ name: nodeData.name });
+
+    if (existingNode) {
+      await handleExistingNode(existingNode, nodeData, parent);
+    } else {
+      console.log(`Creating node: ${nodeData.name}`);
+      const newNode = await Node.create({
+        name: nodeData.name,
+        type: nodeData.type,
+        description: nodeData.description,
+      });
+
+      if (parent) {
+        parent.children.push(newNode._id);
+        await parent.save();
+      }
+
+      if (nodeData.children && Array.isArray(nodeData.children)) {
+        for (const childData of nodeData.children) {
+          console.log(`Creating child node: ${childData.name}`);
+          await createNode(childData, newNode);
+        }
+      }
+
+      console.log(`Node created: ${nodeData.name}`);
+    }
+  } catch (error) {
+    console.error('Error while creating node:', error.message);
+    process.exit(1); // Exit the app in case of an error
+  }
+}
+
 // Load MongoDB URI from environment variables
 const mongodbUri = process.env.MONGODB_URI;
 
@@ -45,17 +93,12 @@ async function startServer() {
   // Save the YAML data into the database
   try {
     console.log('Passing YAML data...');
-    await Node.deleteMany({}); // Clear the existing data in the database (optional)
+    // await Node.deleteMany({}); // Clear the existing data in the database (optional)
     const yamlFilePath = './sample.yaml'; // Change this to the actual file path
     const yamlData = parseYAML(yamlFilePath);
-
+  
     console.log('Parsing YAML data completed.');
-
-    // Validate the YAML data before saving it to the database
-    if (!Array.isArray(yamlData)) {
-      throw new Error('YAML data should be an array of objects.');
-    }
-
+  
     // Validate each object in the array
     for (const node of yamlData) {
       if (
@@ -65,37 +108,16 @@ async function startServer() {
       ) {
         throw new Error('Each node object in the YAML data should have "name", "type", and "description" properties of type string.');
       }
-
+  
       // You can add further validation if needed based on your data requirements
     }
-
+  
     console.log('Saving YAML data to the database...');
     // Create parent nodes with children
     for (const nodeData of yamlData) {
-      // Create the parent node
-      const parentNode = await Node.create({
-        name: nodeData.name,
-        type: nodeData.type,
-        description: nodeData.description,
-      });
-
-      // Check if the current node has children
-      if (nodeData.children && Array.isArray(nodeData.children)) {
-        // Create the child nodes and associate them with the parent node
-        for (const childData of nodeData.children) {
-          const childNode = await Node.create({
-            name: childData.name,
-            type: childData.type,
-            description: childData.description,
-          });
-          parentNode.children.push(childNode._id);
-        }
-
-        // Save the updated parent node with the child references
-        await parentNode.save();
-      }
+      await createNode(nodeData, null);
     }
-
+  
     console.log('YAML data saved to the database successfully');
   } catch (error) {
     console.error('Error while saving YAML data to the database:', error.message);

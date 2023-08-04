@@ -5,6 +5,13 @@
     - name: Child Node 1
       type: Child Type 1
       description: Child Description 1
+      children:
+        - name: Grandchild Node 1
+          type: Grandchild Type 1
+          description: Grandchild Description 1
+        - name: Grandchild Node 2
+          type: Grandchild Type 2
+          description: Grandchild Description 2
     - name: Child Node 2
       type: Child Type 2
       description: Child Description 2
@@ -15,3 +22,10 @@
     - name: Child Node 3
       type: Child Type 3
       description: Child Description 3
+      children:
+        - name: Grandchild Node 3
+          type: Grandchild Type 3
+          description: Grandchild Description 3
+        - name: Grandchild Node 4
+          type: Grandchild Type 4
+          description: Grandchild Description 4
